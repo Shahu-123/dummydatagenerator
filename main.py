@@ -13,7 +13,7 @@ def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustm
     model = LinearRegression().fit(currents.reshape(-1, 1), voltages)
     original_slope = model.coef_[0]
     original_intercept = model.intercept_
-
+    new_intercept = original_intercept - np.random.uniform(-6, -5)
     # Adjust the slope by the specified value
     new_slope = original_slope + slope_adjustment
 
@@ -21,15 +21,14 @@ def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustm
     dummy_currents = currents + np.random.uniform(-1*cur_variance, cur_variance, currents.size)
 
     # Calculate dummy voltages using the new slope and original y-intercept
-    dummy_voltages = new_slope * dummy_currents + original_intercept
-
+    dummy_voltages = new_slope * dummy_currents + new_intercept
     # Introduce random variation to dummy voltages
     dummy_voltages += np.random.uniform(-1*vol_variance, vol_variance, dummy_voltages.size)
 
     # Perform linear regression on the dummy data to find the new line of best fit
     dummy_model = LinearRegression().fit(dummy_currents.reshape(-1, 1), dummy_voltages)
     new_dummy_slope = dummy_model.coef_[0]
-    new_dummy_intercept = dummy_model.intercept_
+    new_dummy_intercept = dummy_model.intercept
 
     # Plot original data
     plt.scatter(currents, voltages, color='blue', label='Real Data')
