@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
-def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustment):
+def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustment, cur_variance, vol_variance):
     # Convert lists to numpy arrays for calculations
     voltages = np.array(real_voltages).reshape(-1, 1)
     currents = np.array(real_currents)
@@ -18,13 +18,13 @@ def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustm
     new_slope = original_slope + slope_adjustment
 
     # Generate dummy current readings with slight variation
-    dummy_currents = currents + np.random.uniform(-0.01, 0.01, currents.size)
+    dummy_currents = currents + np.random.uniform(-1*cur_variance, cur_variance, currents.size)
 
     # Calculate dummy voltages using the new slope and original y-intercept
     dummy_voltages = new_slope * dummy_currents + original_intercept
 
     # Introduce random variation to dummy voltages
-    dummy_voltages += np.random.uniform(-0.45, 0.45, dummy_voltages.size)
+    dummy_voltages += np.random.uniform(-1*vol_variance, vol_variance, dummy_voltages.size)
 
     # Perform linear regression on the dummy data to find the new line of best fit
     dummy_model = LinearRegression().fit(dummy_currents.reshape(-1, 1), dummy_voltages)
@@ -67,6 +67,8 @@ def add_data():
 def generate_data():
     try:
         slope_adjustment = float(slope_adjustment_entry.get())
+        cur_variance = float(cur_variance_entry.get())
+        vol_variance = float(vol_variance_entry.get())
     except ValueError:
         messagebox.showerror("Invalid Input", "Please enter a valid numerical value for slope adjustment.")
         return
@@ -75,7 +77,7 @@ def generate_data():
         messagebox.showerror("No Data", "Please add voltage and current data.")
         return
 
-    dummy_voltages, dummy_currents, gradient = generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustment)
+    dummy_voltages, dummy_currents, gradient = generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustment, cur_variance, vol_variance)
     status_display.config(state=tk.NORMAL)
     status_display.delete(1.0, tk.END)
     status_display.insert(tk.END, f"Dummy Voltages: {dummy_voltages}\nDummy Currents: {dummy_currents}\nGradient: {gradient}")
@@ -111,26 +113,34 @@ tk.Label(root, text="Slope Adjustment (Specify +/-):").grid(row=2, column=0)
 slope_adjustment_entry = tk.Entry(root)
 slope_adjustment_entry.grid(row=2, column=1)
 
+tk.Label(root, text="Current Variance (0.05-0.20):").grid(row=3, column=0)
+cur_variance_entry = tk.Entry(root)
+cur_variance_entry.grid(row=3, column=1)
+
+tk.Label(root, text="Voltage Variance (0.40-0.90):").grid(row=4, column=0)
+vol_variance_entry = tk.Entry(root)
+vol_variance_entry.grid(row=4, column=1)
+
 # Buttons to add data and generate dummy data
 add_button = tk.Button(root, text="Add Data", command=add_data)
-add_button.grid(row=3, column=0, columnspan=2)
+add_button.grid(row=5, column=0, columnspan=2)
 
 generate_button = tk.Button(root, text="Generate Data", command=generate_data)
-generate_button.grid(row=4, column=0, columnspan=2)
+generate_button.grid(row=6, column=0, columnspan=2)
 
 # Display area for entered data and results
 data_display = tk.Listbox(root)
-data_display.grid(row=5, column=0, columnspan=2)
+data_display.grid(row=7, column=0, columnspan=2)
 
 status_display = tk.Text(root, height=10, state=tk.DISABLED)
-status_display.grid(row=6, column=0, columnspan=2)
+status_display.grid(row=8, column=0, columnspan=2)
 
 # Text to inform user to close the graph to view data
 info_label = tk.Label(root, text="Please close the graph to view the data.")
-info_label.grid(row=7, column=0, columnspan=2)
+info_label.grid(row=9, column=0, columnspan=2)
 
 # Button to clear all data
 clear_data_button = tk.Button(root, text="Clear Data", command=clear_data)
-clear_data_button.grid(row=8, column=0, columnspan=2)
+clear_data_button.grid(row=10, column=0, columnspan=2)
 
 root.mainloop()
