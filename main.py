@@ -143,3 +143,5 @@ clear_data_button = tk.Button(root, text="Clear Data", command=clear_data)
 clear_data_button.grid(row=10, column=0, columnspan=2)
 
 root.mainloop()
+
+# Hello There!
