@@ -13,7 +13,8 @@ def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustm
     model = LinearRegression().fit(currents.reshape(-1, 1), voltages)
     original_slope = model.coef_[0]
     original_intercept = model.intercept_
-    new_intercept = original_intercept - np.random.uniform(-3, -4)
+    new_intercept = original_intercept - np.random.uniform(1, 2)
+
     # Adjust the slope by the specified value
     new_slope = original_slope + slope_adjustment
 
@@ -28,7 +29,7 @@ def generate_and_plot_dummy_readings(real_voltages, real_currents, slope_adjustm
     # Perform linear regression on the dummy data to find the new line of best fit
     dummy_model = LinearRegression().fit(dummy_currents.reshape(-1, 1), dummy_voltages)
     new_dummy_slope = dummy_model.coef_[0]
-    new_dummy_intercept = dummy_model.intercept
+    new_dummy_intercept = dummy_model.intercept_
 
     # Plot original data
     plt.scatter(currents, voltages, color='blue', label='Real Data')
@@ -143,5 +144,3 @@ clear_data_button = tk.Button(root, text="Clear Data", command=clear_data)
 clear_data_button.grid(row=10, column=0, columnspan=2)
 
 root.mainloop()
-
-# Hello There!
